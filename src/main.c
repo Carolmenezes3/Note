@@ -2,6 +2,20 @@
 
 Window *my_window;
 TextLayer *text_layer;
+char note_text[255];
+
+void in_received_handler(DictionaryIterator* received, void* context){
+  Tuple* text_tuple = dict_find(received, 0);
+  if(text_tuple){
+    if(persist_write_string(55, text_tuple->value->cstring) < 0) {
+      text_layer_set_text(text_layer, "err");
+    } else {
+      text_layer_set_text(text_layer, text_tuple->value->cstring); 
+    }
+  } else {
+    text_layer_set_text(text_layer, "empty"); 
+  }
+}
 
 void handle_init(void) {
   my_window = window_create();
@@ -10,7 +24,12 @@ void handle_init(void) {
   Layer *window_layer = window_get_root_layer(my_window);
   GRect bounds = layer_get_frame(window_layer);
   text_layer = text_layer_create((GRect){ .origin = { 0, 30 }, .size = bounds.size });
-  text_layer_set_text(text_layer, clock_is_24h_style() ? "Mode:\n24" : "Mode:\n12");
+  if(persist_exists(55)){
+    int x = persist_read_string(55, note_text, 255);
+    text_layer_set_text(text_layer, note_text);
+  } else {
+    text_layer_set_text(text_layer, "<none>");
+  }
   text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(text_layer));
@@ -23,6 +42,12 @@ void handle_deinit(void) {
 
 int main(void) {
   handle_init();
+
+  app_message_register_inbox_received(in_received_handler);
+  const uint32_t inbound_size = 64;
+  const uint32_t outbound_size = 64;
+  app_message_open(inbound_size, outbound_size);
+
   app_event_loop();
   handle_deinit();
 }
