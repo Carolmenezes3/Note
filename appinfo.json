@@ -1,0 +1,18 @@
+{
+    "versionCode": 1,
+    "uuid": "0ed0cf75-cd39-438f-8bd3-0671eabe302c",
+    "capabilities": [
+        "configurable"
+    ],
+    "appKeys": {},
+    "shortName": "MyNotes",
+    "companyName": "vasyl.pasternak@gmail.com",
+    "resources": {
+        "media": []
+    },
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    },
+    "longName": "MyNotes"
+}
