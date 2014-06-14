@@ -38,10 +38,32 @@ void show_note(int i){
   text_layer_set_text(text_layer, note_text);
 }
 
+void next_note(){
+  show_note((note_to_display+1)%NUM_NOTES);
+}
+
+void prev_note(){
+  show_note((NUM_NOTES+note_to_display-1)%NUM_NOTES);
+}
+
+void show_next_note_click(ClickRecognizerRef recognizer, void* context){
+  next_note();
+}
+
+void show_prev_note_click(ClickRecognizerRef recognizer, void* context){
+  prev_note();
+}
+
+void config_provider(void* context){
+  window_single_click_subscribe(BUTTON_ID_DOWN, show_next_note_click);
+  window_single_click_subscribe(BUTTON_ID_UP, show_prev_note_click);
+}
+
 void handle_init(void) {
   my_window = window_create();
 
   window_stack_push(my_window, true);
+  window_set_click_config_provider(my_window, config_provider);
   Layer *window_layer = window_get_root_layer(my_window);
   GRect bounds = layer_get_frame(window_layer);
   text_layer = text_layer_create((GRect){ .origin = { 0, 30 }, .size = bounds.size });
