@@ -1,18 +1,24 @@
 {
-    "versionCode": 1,
-    "uuid": "0ed0cf75-cd39-438f-8bd3-0671eabe302c",
-    "capabilities": [
-        "configurable"
-    ],
-    "appKeys": {},
     "shortName": "MyNotes",
-    "companyName": "vasyl.pasternak@gmail.com",
-    "resources": {
-        "media": []
-    },
-    "versionLabel": "1.0",
+    "versionCode": 1,
     "watchapp": {
         "watchface": false
     },
-    "longName": "MyNotes"
+    "capabilities": [
+        "configurable"
+    ],
+    "versionLabel": "1.0",
+    "companyName": "vasyl.pasternak@gmail.com",
+    "longName": "MyNotes",
+    "appKeys": {
+        "note2": 1,
+        "note3": 2,
+        "note1": 0,
+        "note4": 3,
+        "note5": 4
+    },
+    "uuid": "4ba44470-8096-42c1-9dd4-8718fc44a8d1",
+    "resources": {
+        "media": []
+    }
 }

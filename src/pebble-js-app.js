@@ -8,6 +8,6 @@ Pebble.addEventListener("showConfiguration",
 Pebble.addEventListener("webviewclosed",
   function(e) {
     var configuration = JSON.parse(e.response);
-    Pebble.sendAppMessage({0:configuration});
+    Pebble.sendAppMessage(configuration);
   }
 );
