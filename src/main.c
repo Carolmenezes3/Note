@@ -2,7 +2,9 @@
 
 Window *my_window;
 TextLayer *text_layer;
+TextLayer *note_number_layer;
 static char note_text[255] = "";
+static char note_number[5] = "1";
 static int note_to_display=0;
 
 #define START_NOTE_IDX 1
@@ -36,6 +38,10 @@ void show_note(int i){
     strcpy(note_text, "<empty>");
   }
   text_layer_set_text(text_layer, note_text);
+  note_number[0] = '#';
+  note_number[1] = (char)('0' + START_NOTE_IDX + i);
+  note_number[2] = 0;
+  text_layer_set_text(note_number_layer, note_number);
 }
 
 void next_note(){
@@ -66,9 +72,14 @@ void handle_init(void) {
   window_set_click_config_provider(my_window, config_provider);
   Layer *window_layer = window_get_root_layer(my_window);
   GRect bounds = layer_get_frame(window_layer);
-  text_layer = text_layer_create((GRect){ .origin = { 0, 30 }, .size = bounds.size });
-  text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
-  text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
+  text_layer = text_layer_create((GRect){ .origin = {5, 20}, .size = bounds.size });
+  text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28));
+  text_layer_set_text_alignment(text_layer, GTextAlignmentLeft);
+  
+  note_number_layer = text_layer_create((GRect){.origin={0,0}, .size = {bounds.size.w - 10, 20}});
+  text_layer_set_font(note_number_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  text_layer_set_text_alignment(note_number_layer, GTextAlignmentRight);
+  layer_add_child(window_layer, text_layer_get_layer(note_number_layer));
   layer_add_child(window_layer, text_layer_get_layer(text_layer));
   
   show_note(0);
