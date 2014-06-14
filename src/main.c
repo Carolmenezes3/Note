@@ -3,18 +3,39 @@
 Window *my_window;
 TextLayer *text_layer;
 static char note_text[255] = "";
+static int note_to_display=0;
 
-#define NOTE_INDEX 1
+#define START_NOTE_IDX 1
+#define NUM_NOTES 5
 
 void in_received_handler(DictionaryIterator* received, void* context){
-  Tuple* text_tuple = dict_find(received, 0);
-  if(text_tuple){
-    strcpy(note_text, text_tuple->value->cstring);
-    persist_write_string(NOTE_INDEX, note_text);
-    text_layer_set_text(text_layer, note_text); 
-  } else {
-    text_layer_set_text(text_layer, "empty"); 
+  for(int i = 0; i < NUM_NOTES; i++){
+    // get each note
+    Tuple* text_tuple = dict_find(received, i);
+    if(text_tuple){
+      // do not update the note if the value is empty string
+      if(strcmp(text_tuple->value->cstring, "") != 0){
+        persist_write_string(START_NOTE_IDX+i, text_tuple->value->cstring);
+        if(i == note_to_display){
+          strcpy(note_text, text_tuple->value->cstring);
+          text_layer_set_text(text_layer, note_text); 
+        }
+      }
+    }   
   }
+}
+
+void show_note(int i){
+  if(i<0 || i>=NUM_NOTES){
+    return;
+  }
+  note_to_display = i;
+  if(persist_exists(START_NOTE_IDX+i)){
+    persist_read_string(START_NOTE_IDX+i, note_text, 255);
+  } else {
+    strcpy(note_text, "<empty>");
+  }
+  text_layer_set_text(text_layer, note_text);
 }
 
 void handle_init(void) {
@@ -24,15 +45,14 @@ void handle_init(void) {
   Layer *window_layer = window_get_root_layer(my_window);
   GRect bounds = layer_get_frame(window_layer);
   text_layer = text_layer_create((GRect){ .origin = { 0, 30 }, .size = bounds.size });
-  persist_read_string(NOTE_INDEX, note_text, 255);
-  text_layer_set_text(text_layer, note_text);
   text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(text_layer));
+  
+  show_note(0);
 }
 
 void handle_deinit(void) {
-  persist_write_string(NOTE_INDEX, note_text);
   text_layer_destroy(text_layer);
   window_destroy(my_window);
 }
